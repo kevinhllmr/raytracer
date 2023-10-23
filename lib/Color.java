@@ -52,6 +52,13 @@ public class Color {
 
         double maxDeltaE = Math.sqrt(1.0 + 1.0 + 1.0);
 
-        return ((1.0 - (deltaE / maxDeltaE)) * 100.0);
+        double perc = ((1.0 - (deltaE / maxDeltaE)) * 100.0);
+        double truncated =  Math.floor(perc * 100) / 100;
+
+        return truncated;
+    }
+
+    public boolean isSimilar(Color c2) {
+        return (this.getSimilarity(c2) > 100 - Constants.EPSILON);
     }
 }

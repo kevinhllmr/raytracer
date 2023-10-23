@@ -69,8 +69,7 @@ public class Point {
     }
 
     public boolean equals(Point p2) {
-        double epsilon = 0.000001d;
-        return (Math.abs(x - p2.x) < epsilon) && (Math.abs(y - p2.y) < epsilon) && (Math.abs(z - p2.z) < epsilon) && (Math.abs(w - p2.w) < epsilon);
+        return (Math.abs(x - p2.x) < Constants.EPSILON) && (Math.abs(y - p2.y) < Constants.EPSILON) && (Math.abs(z - p2.z) < Constants.EPSILON) && (Math.abs(w - p2.w) < Constants.EPSILON);
     }
 
     public Point min(Point p2) {

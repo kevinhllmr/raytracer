@@ -10,11 +10,15 @@ public class Main {
         Point p2 = new Point(1, 2, 3, 4);
 
         Color c1 = ColorPalette.BLACK.getColor();
-        Color c2 = ColorPalette.GREEN.getColor();
+        Color c2 = ColorPalette.BLACK.getColor();
 
-        // System.out.println(v2.sqrMagnitude());
-        // System.out.println(v2.normalized().getW());
+        System.out.println(p1.add(v1).print());
+        System.out.println(p1.max(p2).print());
 
-        // System.out.println(c1.getSimilarity(c2)); 
+        System.out.println("Länge des Vektors: " + v2.sqrMagnitude());
+        System.out.println("W-Komponente des normalisierten Vektors: " + v2.normalized().getW());
+
+        System.out.println("Ähnlichkeit der Farben: " + c1.getSimilarity(c2)); 
+        System.out.println(c1.isSimilar(c2));
     }
 }

@@ -77,13 +77,12 @@ public class Vector {
     }
 
     public boolean equals(Vector v2) {
-        double epsilon = 0.000001d;
-        return (Math.abs(x - v2.x) < epsilon) && (Math.abs(y - v2.y) < epsilon) && (Math.abs(z - v2.z) < epsilon) && (Math.abs(w - v2.w) < epsilon);
+        return (Math.abs(x - v2.x) < Constants.EPSILON) && (Math.abs(y - v2.y) < Constants.EPSILON) && (Math.abs(z - v2.z) < Constants.EPSILON) && (Math.abs(w - v2.w) < Constants.EPSILON);
     }
 
     public Vector normalized() {
-        Scalar reciprocal = new Scalar(1/magnitude());
-        return reciprocal.multiply(this);
+        double reciprocal = 1/magnitude();
+        return this.multiply(reciprocal);
     }
 
     public double dot(Vector v2) {
@@ -99,10 +98,10 @@ public class Vector {
     }
 
     public boolean shorterThan(Vector v2) {
-        return magnitude() < v2.magnitude();
+        return sqrMagnitude() < v2.sqrMagnitude();
     }
 
     public boolean longerThan(Vector v2) {
-        return magnitude() > v2.magnitude();
+        return sqrMagnitude() > v2.sqrMagnitude();
     }
 }
