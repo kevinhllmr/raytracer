@@ -27,6 +27,10 @@ public class Color {
         this.a = Math.max(0.0, Math.min(1.0, a));
     }
 
+    public String print() {
+        return "(" + r + ", " + g + ", " + b + ", " + a + ")";
+    }
+
     public double getR() {
         return r;
     }
@@ -59,6 +63,6 @@ public class Color {
     }
 
     public boolean isSimilar(Color c2) {
-        return (this.getSimilarity(c2) > 100 - Constants.EPSILON);
+        return (r == c2.r && g == c2.g && b == c2.b && a == c2.a);
     }
 }

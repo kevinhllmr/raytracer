@@ -53,11 +53,11 @@ public class Point {
     }  
     
     public Point multiply(double scalar) {
-        return new Point(x * scalar, y * scalar, z * scalar, w * scalar);
+        return new Point(x * scalar, y * scalar, z * scalar);
     }
 
     public Point divide(double scalar) {
-        return new Point(x / scalar, y / scalar, z / scalar, w / scalar);
+        return new Point(x / scalar, y / scalar, z / scalar);
     }
 
     public Point add(Vector v) {
@@ -76,27 +76,23 @@ public class Point {
         double resultX;
         double resultY;
         double resultZ;
-        double resultW;
 
         resultX = x < p2.x ? x : p2.x;
         resultY = y < p2.y ? x : p2.y;
         resultZ = z < p2.z ? x : p2.z;
-        resultW = w < p2.w ? x : p2.w;
 
-        return new Point(resultX, resultY, resultZ, resultW);
+        return new Point(resultX, resultY, resultZ);
     }
 
     public Point max(Point p2) {
         double resultX;
         double resultY;
         double resultZ;
-        double resultW;
 
         resultX = x > p2.x ? x : p2.x;
-        resultY = y > p2.y ? x : p2.y;
-        resultZ = z > p2.z ? x : p2.z;
-        resultW = w > p2.w ? x : p2.w;
+        resultY = y > p2.y ? y : p2.y;
+        resultZ = z > p2.z ? z : p2.z;
 
-        return new Point(resultX, resultY, resultZ, resultW);
+        return new Point(resultX, resultY, resultZ);
     }
 }

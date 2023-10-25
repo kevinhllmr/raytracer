@@ -49,27 +49,27 @@ public class Vector {
     }
 
     public Vector subtract(Vector v2) {
-        return new Vector(x - v2.x, y - v2.y, z - v2.z, w - v2.w);
+        return new Vector(x - v2.x, y - v2.y, z - v2.z);
     }  
     
     public Vector add(Vector v2) {
-        return new Vector(x + v2.x, y + v2.y, z + v2.z, w + v2.w);
+        return new Vector(x + v2.x, y + v2.y, z + v2.z);
     }  
 
     public Vector negate() {
-        return new Vector(-x, -y, -z, -w);
+        return new Vector(-x, -y, -z);
     } 
 
     public Vector multiply(double scalar) {
-        return new Vector(x * scalar, y * scalar, z * scalar, w * scalar);
+        return new Vector(x * scalar, y * scalar, z * scalar);
     }
 
     public Vector divide(double scalar) {
-        return new Vector(x / scalar, y / scalar, z / scalar, w / scalar);
+        return new Vector(x / scalar, y / scalar, z / scalar);
     }
 
     public double sqrMagnitude() {
-        return (x*x + y*y + z*z + w*w);
+        return (x*x + y*y + z*z);
     }
 
     public double magnitude() {
@@ -82,11 +82,11 @@ public class Vector {
 
     public Vector normalized() {
         double reciprocal = 1/magnitude();
-        return this.multiply(reciprocal);
+        return multiply(reciprocal);
     }
 
     public double dot(Vector v2) {
-        return (x*v2.x + y*v2.y + z*v2.z + z*v2.z);
+        return (x*v2.x + y*v2.y + z*v2.z);
     }
 
     public Vector cross(Vector v2) {
