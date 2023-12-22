@@ -1,11 +1,11 @@
-package lib;
+package lib.math;
 
 public class Point {
 
-    private double x;
-    private double y;
-    private double z;
-    private double w;
+    private final double x;
+    private final double y;
+    private final double z;
+    private final double w;
 
     public Point(double x, double y, double z) {
         this.x = x;
@@ -28,23 +28,24 @@ public class Point {
         this.w = p.w;
     }
 
-    public String print() {
+    @Override
+    public String toString() {
         return "(" + x + ", " + y + ", " + z + ", " + w + ")";
-    }
+  }
 
-    public double getX() {
+    public double x() {
         return x;
     }
     
-    public double getY() {
+    public double y() {
         return y;
     }
 
-    public double getZ() {
+    public double z() {
         return z;
     }
 
-   public double getW() {
+   public double w() {
        return w;
    }
 
@@ -61,16 +62,24 @@ public class Point {
     }
 
     public Point add(Vector v) {
-        return new Point(x + v.getX(), y + v.getY(), z + v.getZ(), w + v.getW());
+        return new Point(x + v.x(), y + v.y(), z + v.z(), w + v.w());
     }
 
     public Point subtract(Vector v) {
-        return new Point(x - v.getX(), y - v.getY(), z - v.getZ(), w - v.getW());
+        return new Point(x - v.x(), y - v.y(), z - v.z(), w - v.w());
     }
 
-    public boolean equals(Point p2) {
-        return (Math.abs(x - p2.x) < Constants.EPSILON) && (Math.abs(y - p2.y) < Constants.EPSILON) && (Math.abs(z - p2.z) < Constants.EPSILON) && (Math.abs(w - p2.w) < Constants.EPSILON);
-    }
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Point p2 = (Point) obj;
+        return (Calc.approxEqual(x, p2.x)) && (Calc.approxEqual(y, p2.y)) && (Calc.approxEqual(z, p2.z)) && (Calc.approxEqual(w, p2.w));
+    }    
 
     public Point min(Point p2) {
         double resultX;

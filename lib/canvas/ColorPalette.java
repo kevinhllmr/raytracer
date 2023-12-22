@@ -1,4 +1,4 @@
-package lib;
+package lib.canvas;
 
 public enum ColorPalette {
     BLACK(new Color(0, 0, 0)),
@@ -7,6 +7,7 @@ public enum ColorPalette {
     BLUE(new Color(0, 0, 1)),
     GREEN(new Color(0, 1, 0)),
     YELLOW(new Color(1, 1, 0)),
+    ORANGE(new Color(1, 0.65, 0)),
     RED(new Color(1, 0, 0)),
     MAGENTA(new Color(1, 0, 1)),
     TRANSPARENT(new Color(0, 0, 0, 0));

@@ -1,4 +1,4 @@
-package lib;
+package lib.math;
 
 public class Vector {
     
@@ -28,24 +28,25 @@ public class Vector {
         v.w = w;
     }
     
-    public String print() {
+    @Override
+    public String toString() {
         return "(" + x + ", " + y + ", " + z + ", " + w + ")";
     }
 
-    public double getW() {
-        return w;
-    }
-
-    public double getX() {
+    public double x() {
         return x;
     }
 
-    public double getY() {
+    public double y() {
         return y;
     }
 
-    public double getZ() {
+    public double z() {
         return z;
+    }
+
+    public double w() {
+        return w;
     }
 
     public Vector subtract(Vector v2) {
@@ -76,8 +77,16 @@ public class Vector {
         return Math.sqrt(sqrMagnitude());
     }
 
-    public boolean equals(Vector v2) {
-        return (Math.abs(x - v2.x) < Constants.EPSILON) && (Math.abs(y - v2.y) < Constants.EPSILON) && (Math.abs(z - v2.z) < Constants.EPSILON) && (Math.abs(w - v2.w) < Constants.EPSILON);
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Vector v2 = (Vector) obj;
+        return (Calc.approxEqual(x, v2.x)) && (Calc.approxEqual(y, v2.y)) && (Calc.approxEqual(z, v2.z)) && (Calc.approxEqual(w, v2.w));
     }
 
     public Vector normalized() {
@@ -95,6 +104,10 @@ public class Vector {
         double resultZ = x*v2.y - y*v2.x;
 
         return new Vector(resultX, resultY, resultZ, 0);
+    }
+
+    public Vector reflect(Vector n) {
+        return this.subtract(n.multiply(2*this.dot(n)));
     }
 
     public boolean shorterThan(Vector v2) {
