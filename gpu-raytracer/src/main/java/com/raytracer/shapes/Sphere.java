@@ -1,5 +1,7 @@
 package com.raytracer.shapes;
 
+import com.raytracer.math.AABB;
+import com.raytracer.math.Matrix;
 import com.raytracer.math.Point;
 import com.raytracer.math.Vector;
 import com.raytracer.ray.Intersection;
@@ -32,6 +34,27 @@ public class Sphere extends Shape {
         }
 
         return intersectionList;
+    }
+
+    @Override
+    public AABB getBoundingBox() {
+        Point sphereCenter = this.getTransformation().multiply(new Point(0, 0, 0));
+        double sphereRadius = 1.0;
+
+        Matrix transformation = this.getTransformation();
+        double scaleX = transformation.get(0, 0); 
+        double scaleY = transformation.get(1, 1); 
+        double scaleZ = transformation.get(2, 2);  
+
+        // Adjust the bounding box to account for scaling
+        double minX = sphereCenter.x() - sphereRadius * scaleX;
+        double minY = sphereCenter.y() - sphereRadius * scaleY;
+        double minZ = sphereCenter.z() - sphereRadius * scaleZ;
+        double maxX = sphereCenter.x() + sphereRadius * scaleX;
+        double maxY = sphereCenter.y() + sphereRadius * scaleY;
+        double maxZ = sphereCenter.z() + sphereRadius * scaleZ;
+
+        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
     }
 
     @Override

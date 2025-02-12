@@ -1,5 +1,6 @@
 package com.raytracer.shapes;
 
+import com.raytracer.math.AABB;
 import com.raytracer.math.Matrix;
 import com.raytracer.math.Point;
 import com.raytracer.math.Vector;
@@ -18,7 +19,7 @@ public abstract class Shape {
     public void setTransformation(Matrix transformation) {
         this.transformation = transformation;
     }
-    
+
     public Matrix getTransformation() {
         return transformation;
     }
@@ -43,4 +44,6 @@ public abstract class Shape {
     }
 
     public abstract Vector localNormalAt(Point point);
+
+    public abstract AABB getBoundingBox();
 }

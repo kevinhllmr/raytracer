@@ -15,9 +15,13 @@ import com.raytracer.shapes.Material;
 import com.raytracer.shapes.Shape;
 import com.raytracer.shapes.Sphere;
 
+import com.raytracer.acceleration.*;
+
 public class Scene {
     private List<Shape> shapes = new ArrayList<>();
     private List<LightSource> lightSources = new ArrayList<>();
+    private KDTree kdTree; 
+    private BVH bvh;
     // private List<Material> materials;
 
     public void addShapes(Shape shape) {        
@@ -35,6 +39,14 @@ public class Scene {
     public List<LightSource> getLightSources() {
         return lightSources;
     }  
+
+    public void buildKDTree() {
+        this.kdTree = new KDTree(shapes); 
+    }
+
+    public void buildBVH() {
+        this.bvh = new BVH(shapes);  
+    }
     
     public static Scene DefaultScene() {
         Scene scene = new Scene();
@@ -99,7 +111,10 @@ public class Scene {
         scene.addShapes(sphere2);
         scene.addShapes(sphere3);
 
-        Camera camera = new Camera(1600, 800, 60, new Point(0,1.5,-5.0), new Point(0,1,0), new Vector(0,1,0));
+        // scene.buildKDTree();
+        scene.buildBVH();
+
+        Camera camera = new Camera(1920, 1080, 60, new Point(0,1.5,-5.0), new Point(0,1,0), new Vector(0,1,0));
 
         RayTracer rt = new RayTracer(scene, camera);
         Canvas canvas = rt.getRenderTarget();
@@ -108,10 +123,16 @@ public class Scene {
 
     public IntersectionList traceRay(Ray ray) {
         IntersectionList intersectionList = new IntersectionList();
-        for (Shape shape : shapes) {
-            intersectionList.addIntersectionList(shape.intersect(ray));         
-        }
 
+        if (bvh != null) {
+            intersectionList = bvh.intersect(ray); 
+        } else if (kdTree != null) {
+            intersectionList = kdTree.intersect(ray); 
+        } else {
+            for (Shape shape : shapes) {
+                intersectionList.addIntersectionList(shape.intersect(ray));
+            }
+        }
         return intersectionList;
     }
 }

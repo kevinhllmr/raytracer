@@ -28,6 +28,15 @@ public class Point {
         this.w = p.w;
     }
 
+    public double get(int index) {
+        switch (index) {
+            case 0: return x; // x-coordinate
+            case 1: return y; // y-coordinate
+            case 2: return z; // z-coordinate
+            default: throw new IllegalArgumentException("Index must be 0, 1, or 2");
+        }
+    }
+
     @Override
     public String toString() {
         return "(" + x + ", " + y + ", " + z + ", " + w + ")";

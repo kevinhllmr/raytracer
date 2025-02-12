@@ -117,4 +117,18 @@ public class Vector {
     public boolean longerThan(Vector v2) {
         return sqrMagnitude() > v2.sqrMagnitude();
     }
+
+    public int getDominantAxis() {
+        double absX = Math.abs(x);
+        double absY = Math.abs(y);
+        double absZ = Math.abs(z);
+    
+        if (absX >= absY && absX >= absZ) {
+            return 0; 
+        }
+        if (absY >= absX && absY >= absZ) {
+            return 1; 
+        }
+        return 2; 
+    }
 }
