@@ -33,7 +33,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
         long startTime = System.nanoTime();
         
-        Scene.generateDefaultScene(); 
+        // Scene.generateDefaultScene(); 
+        Scene.generateComplexScene();
         
         long endTime = System.nanoTime();
         double elapsedTimeSec = (endTime - startTime) / 1_000_000_000.0; 
@@ -43,7 +44,7 @@ public class Main {
     
         String timeStr = String.format("%dmin, %.0fs, %dms", minutes, seconds, milliseconds);
         
-        System.out.println("Ray tracing time: " + timeStr);
+        System.out.println("Total: " + timeStr);
     }
   
     // public static void main(String[] args) throws IOException {

@@ -19,52 +19,57 @@ public class AABB {
     public boolean intersects(Ray ray) {
         double tMin = (minX - ray.getOrigin().x()) / ray.getDirection().x();
         double tMax = (maxX - ray.getOrigin().x()) / ray.getDirection().x();
-    
+
         if (tMin > tMax) {
             double temp = tMin;
             tMin = tMax;
             tMax = temp;
         }
-    
+
         double tyMin = (minY - ray.getOrigin().y()) / ray.getDirection().y();
         double tyMax = (maxY - ray.getOrigin().y()) / ray.getDirection().y();
-    
+
         if (tyMin > tyMax) {
             double temp = tyMin;
             tyMin = tyMax;
             tyMax = temp;
         }
-    
+
         if ((tMin > tyMax) || (tyMin > tMax)) return false;
-    
+
         if (tyMin > tMin) tMin = tyMin;
         if (tyMax < tMax) tMax = tyMax;
-    
+
         double tzMin = (minZ - ray.getOrigin().z()) / ray.getDirection().z();
         double tzMax = (maxZ - ray.getOrigin().z()) / ray.getDirection().z();
-    
+
         if (tzMin > tzMax) {
             double temp = tzMin;
             tzMin = tzMax;
             tzMax = temp;
         }
-    
-        if ((tMin > tzMax) || (tzMin > tMax)) return false;
-    
-        return true;
-    }    
+
+        return !((tMin > tzMax) || (tzMin > tMax));
+    }
 
     public double getCenter(int axis) {
         switch (axis) {
-            case 0: 
+            case 0:
                 return (minX + maxX) / 2;
-            case 1: 
+            case 1:
                 return (minY + maxY) / 2;
-            case 2: 
+            case 2:
                 return (minZ + maxZ) / 2;
             default:
                 throw new IllegalArgumentException("Invalid axis index: " + axis);
         }
+    }
+
+    public double getSurfaceArea() {
+        double width = maxX - minX;
+        double height = maxY - minY;
+        double depth = maxZ - minZ;
+        return 2.0 * (width * height + width * depth + height * depth);
     }
 
     public static AABB enclose(Iterable<Shape> objects) {

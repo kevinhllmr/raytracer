@@ -111,8 +111,8 @@ public class Scene {
         scene.addShapes(sphere2);
         scene.addShapes(sphere3);
 
-        // scene.buildKDTree();
-        scene.buildBVH();
+        scene.buildKDTree();
+        // scene.buildBVH();
 
         Camera camera = new Camera(1920, 1080, 60, new Point(0,1.5,-5.0), new Point(0,1,0), new Vector(0,1,0));
 
@@ -120,6 +120,72 @@ public class Scene {
         Canvas canvas = rt.getRenderTarget();
         canvas.writeToFile();
     }
+
+    public static void generateComplexScene() throws IOException {
+        LightSource light = new PointLightSource(new Point(0, 50, 0), new Color(1, 1, 1));
+    
+        Scene scene = new Scene();
+    
+        int gridSize = 10; 
+        double spacing = 3.5; 
+    
+        for (int x = 0; x < gridSize; x++) {
+            for (int y = 0; y < gridSize; y++) {
+                for (int z = 0; z < gridSize; z++) {
+                    Sphere sphere = new Sphere();
+                    sphere.setTransformation(Matrix.translation(
+                        (x - gridSize / 2) * spacing, 
+                        (y - gridSize / 2) * spacing, 
+                        (z - gridSize / 2) * spacing
+                    ));
+    
+                    Material mat = new Material();
+                    mat.setColor(new Color(Math.random(), Math.random(), Math.random()));
+                    mat.setDiffuse(0.7);
+                    mat.setSpecular(0.3);
+                    mat.setShininess(20);
+                    sphere.setMaterial(mat);
+    
+                    scene.addShapes(sphere);
+                }
+            }
+        }
+    
+        scene.addLightSource(light);
+
+        long startBuild = System.nanoTime();
+
+        // scene.buildKDTree();
+        scene.buildBVH();
+
+        long endBuild = System.nanoTime();
+        double buildTimeMs = (endBuild - startBuild) / 1_000_000.0;
+
+        int buildMinutes = (int) (buildTimeMs / 60000);
+        int buildSeconds = (int) ((buildTimeMs % 60000) / 1000);
+        int buildMilliseconds = (int) (buildTimeMs % 1000);
+
+        System.out.println("Build time: " + String.format("%dmin, %ds, %dms", buildMinutes, buildSeconds, buildMilliseconds));
+
+        Camera camera = new Camera(800, 400, 60, new Point(0, 15, -30), new Point(0, 5, 0), new Vector(0, 1, 0));
+
+        RayTracer rt = new RayTracer(scene, camera);
+
+        long startRender = System.nanoTime();
+        Canvas canvas = rt.getRenderTarget();
+        long endRender = System.nanoTime();
+
+        double renderTimeMs = (endRender - startRender) / 1_000_000.0;
+
+        int renderMinutes = (int) (renderTimeMs / 60000);
+        int renderSeconds = (int) ((renderTimeMs % 60000) / 1000);
+        int renderMilliseconds = (int) (renderTimeMs % 1000);
+
+        System.out.println("Traversal Time: " + String.format("%dmin, %ds, %dms", renderMinutes, renderSeconds, renderMilliseconds));
+
+        canvas.writeToFile();
+    }
+    
 
     public IntersectionList traceRay(Ray ray) {
         IntersectionList intersectionList = new IntersectionList();

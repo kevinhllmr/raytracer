@@ -33,8 +33,5 @@ public class BVHNode {
                 if (right != null) right.intersect(ray, intersections);
             }
         }
-    }
-    
-    
-    
+    }    
 }

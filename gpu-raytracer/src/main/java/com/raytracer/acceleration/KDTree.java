@@ -7,10 +7,12 @@ import com.raytracer.ray.IntersectionList;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
 
 public class KDTree {
+    private static final int MAX_DEPTH = 20; 
+    private static final int MIN_SHAPES_PER_LEAF = 1;
 
-    private static final int K = 3;
     private KDNode root;
 
     public KDTree(List<Shape> shapes) {
@@ -18,28 +20,61 @@ public class KDTree {
     }
 
     private KDNode buildTree(List<Shape> shapes, int depth) {
-        if (shapes.isEmpty()) {
-            return null;
+        if (shapes.isEmpty()) return null;
+
+        if (shapes.size() <= MIN_SHAPES_PER_LEAF || depth >= MAX_DEPTH) {
+            return new KDNode(null, null, AABB.enclose(shapes), shapes);
         }
 
-        int axis = depth % K;
-        shapes.sort((a, b) -> {
-            AABB boxA = a.getBoundingBox();
-            AABB boxB = b.getBoundingBox();
-            double midA = (axis == 0) ? (boxA.minX + boxA.maxX) / 2 : (axis == 1) ? (boxA.minY + boxA.maxY) / 2 : (boxA.minZ + boxA.maxZ) / 2;
-            double midB = (axis == 0) ? (boxB.minX + boxB.maxX) / 2 : (axis == 1) ? (boxB.minY + boxB.maxY) / 2 : (boxB.minZ + boxB.maxZ) / 2;
-            return Double.compare(midA, midB);
-        });
+        int bestAxis = -1;
+        double bestSplit = 0;
+        double bestCost = Double.MAX_VALUE;
+        
+        for (int axis = 0; axis < 3; axis++) {
+            final int currentAxis = axis;
+            shapes.sort(Comparator.comparingDouble(s -> s.getBoundingBox().getCenter(currentAxis)));
+            
+            for (int i = 1; i < shapes.size(); i++) {
+                double splitPos = shapes.get(i).getBoundingBox().getCenter(currentAxis);
+        
+                List<Shape> left = new ArrayList<>();
+                List<Shape> right = new ArrayList<>();
+        
+                for (Shape shape : shapes) {
+                    if (shape.getBoundingBox().getCenter(currentAxis) < splitPos) left.add(shape);
+                    else right.add(shape);
+                }
+        
+                double cost = sahCost(left.size(), right.size(), AABB.enclose(left), AABB.enclose(right));
+                if (cost < bestCost) {
+                    bestCost = cost;
+                    bestAxis = currentAxis; 
+                    bestSplit = splitPos;
+                }
+            }
+        }
+        
+        if (bestAxis == -1) {
+            return new KDNode(null, null, AABB.enclose(shapes), shapes);
+        }
 
-        int medianIndex = shapes.size() / 2;
-        Shape median = shapes.get(medianIndex);
+        List<Shape> leftShapes = new ArrayList<>();
+        List<Shape> rightShapes = new ArrayList<>();
+        for (Shape shape : shapes) {
+            if (shape.getBoundingBox().getCenter(bestAxis) < bestSplit) {
+                leftShapes.add(shape);
+            } else {
+                rightShapes.add(shape);
+            }
+        }
 
-        List<Shape> leftShapes = new ArrayList<>(shapes.subList(0, medianIndex));
-        List<Shape> rightShapes = new ArrayList<>(shapes.subList(medianIndex + 1, shapes.size()));
+        return new KDNode(buildTree(leftShapes, depth + 1), buildTree(rightShapes, depth + 1), AABB.enclose(shapes), null);
+    }
 
-        KDNode node = new KDNode(median, buildTree(leftShapes, depth + 1), buildTree(rightShapes, depth + 1));
-
-        return node;
+    private double sahCost(int leftSize, int rightSize, AABB leftBox, AABB rightBox) {
+        double leftArea = leftBox.getSurfaceArea();
+        double rightArea = rightBox.getSurfaceArea();
+        return leftSize * leftArea + rightSize * rightArea;
     }
 
     public IntersectionList intersect(Ray ray) {
@@ -47,39 +82,44 @@ public class KDTree {
     }
 
     private IntersectionList intersectNode(Ray ray, KDNode node) {
-        if (node == null) {
-            return new IntersectionList();
-        }
+        if (node == null || !node.bbox.intersects(ray)) return new IntersectionList();
 
         IntersectionList intersections = new IntersectionList();
 
-        AABB box = node.shape.getBoundingBox();
-        if (!box.intersects(ray)) {
+        if (node.shapes != null) {
+            for (Shape shape : node.shapes) {
+                intersections.addIntersectionList(shape.intersect(ray));
+            }
             return intersections;
         }
 
-        intersections.addIntersectionList(node.shape.intersect(ray));
+        boolean leftFirst = (node.left != null && ray.getOrigin().get(node.splitAxis) < node.splitPosition);
 
+        KDNode first = leftFirst ? node.left : node.right;
+        KDNode second = leftFirst ? node.right : node.left;
 
-        if (ray.getOrigin().x() < box.maxX) {
-            intersections.addIntersectionList(intersectNode(ray, node.left));
+        if (first != null && first.bbox.intersects(ray)) {
+            intersections.addIntersectionList(intersectNode(ray, first));
         }
-        if (ray.getOrigin().x() > box.minX) {
-            intersections.addIntersectionList(intersectNode(ray, node.right));
+        if (second != null && second.bbox.intersects(ray)) {
+            intersections.addIntersectionList(intersectNode(ray, second));
         }
 
         return intersections;
     }
 
     private static class KDNode {
-        Shape shape;
-        KDNode left;
-        KDNode right;
+        KDNode left, right;
+        AABB bbox;
+        List<Shape> shapes;
+        int splitAxis;
+        double splitPosition;
 
-        public KDNode(Shape shape, KDNode left, KDNode right) {
-            this.shape = shape;
+        public KDNode(KDNode left, KDNode right, AABB bbox, List<Shape> shapes) {
             this.left = left;
             this.right = right;
+            this.bbox = bbox;
+            this.shapes = shapes;
         }
     }
 }
