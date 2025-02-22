@@ -46,7 +46,6 @@ public class Sphere extends Shape {
         double scaleY = transformation.get(1, 1); 
         double scaleZ = transformation.get(2, 2);  
 
-        // Adjust the bounding box to account for scaling
         double minX = sphereCenter.x() - sphereRadius * scaleX;
         double minY = sphereCenter.y() - sphereRadius * scaleY;
         double minZ = sphereCenter.z() - sphereRadius * scaleZ;

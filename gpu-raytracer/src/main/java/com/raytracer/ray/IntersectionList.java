@@ -5,6 +5,7 @@ import java.util.List;
 
 public class IntersectionList {
     private List<Intersection> intersections;
+    private int totalIntersectionCount = 0;
 
     public IntersectionList() {
         intersections = new ArrayList<>();
@@ -17,6 +18,7 @@ public class IntersectionList {
         }
         
         intersections.add(index, intersection);
+        totalIntersectionCount++;
     }
 
     public void addIntersectionList(IntersectionList xs) {
@@ -30,6 +32,7 @@ public class IntersectionList {
             }
             
             intersections.add(index, intersection);
+            totalIntersectionCount++;
         }
     }
 
@@ -53,5 +56,13 @@ public class IntersectionList {
         }
 
         return null;
+    }
+
+    public int getTotalIntersectionCount() {
+        return totalIntersectionCount;
+    }
+
+    public void resetIntersectionCount() {
+        totalIntersectionCount = 0;
     }
 }

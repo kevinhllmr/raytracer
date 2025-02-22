@@ -111,22 +111,58 @@ public class Scene {
         scene.addShapes(sphere2);
         scene.addShapes(sphere3);
 
-        scene.buildKDTree();
-        // scene.buildBVH();
+        long startBuild = System.nanoTime();
+
+        System.gc();
+        long beforeMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+        // scene.buildKDTree();
+        scene.buildBVH();
+
+        long afterMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long memoryUsed = afterMemory - beforeMemory;
+        double memoryUsedKB = memoryUsed / 1024.0;
+        String roundedMemoryUsedKB = String.format("%.2f", memoryUsedKB);
+
+        if(scene.kdTree != null || scene.bvh != null) {
+            String structureType = (scene.bvh != null) ? "BVH" : "KD-Tree";
+            System.out.println(structureType + " memory usage: " + roundedMemoryUsedKB + " KB");
+        }
+
+        long endBuild = System.nanoTime();
+        double buildTimeMs = (endBuild - startBuild) / 1_000_000.0;
+
+        int buildMinutes = (int) (buildTimeMs / 60000);
+        int buildSeconds = (int) ((buildTimeMs % 60000) / 1000);
+        int buildMilliseconds = (int) (buildTimeMs % 1000);
+
+        System.out.println("Build time: " + String.format("%dmin, %ds, %dms", buildMinutes, buildSeconds, buildMilliseconds));
 
         Camera camera = new Camera(1920, 1080, 60, new Point(0,1.5,-5.0), new Point(0,1,0), new Vector(0,1,0));
 
         RayTracer rt = new RayTracer(scene, camera);
+        
+        long startRender = System.nanoTime();
         Canvas canvas = rt.getRenderTarget();
-        canvas.writeToFile();
+        long endRender = System.nanoTime();
+
+        double renderTimeMs = (endRender - startRender) / 1_000_000.0;
+
+        int renderMinutes = (int) (renderTimeMs / 60000);
+        int renderSeconds = (int) ((renderTimeMs % 60000) / 1000);
+        int renderMilliseconds = (int) (renderTimeMs % 1000);
+
+        System.out.println("Traversal Time: " + String.format("%dmin, %ds, %dms", renderMinutes, renderSeconds, renderMilliseconds));
+
+        canvas.writeToFile();     
     }
 
-    public static void generateComplexScene() throws IOException {
+    public static void generateGridScene() throws IOException {
         LightSource light = new PointLightSource(new Point(0, 50, 0), new Color(1, 1, 1));
     
         Scene scene = new Scene();
     
-        int gridSize = 10; 
+        int gridSize = 100; 
         double spacing = 3.5; 
     
         for (int x = 0; x < gridSize; x++) {
@@ -155,8 +191,21 @@ public class Scene {
 
         long startBuild = System.nanoTime();
 
-        // scene.buildKDTree();
-        scene.buildBVH();
+        System.gc();
+        long beforeMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+        scene.buildKDTree();
+        // scene.buildBVH();
+
+        long afterMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long memoryUsed = afterMemory - beforeMemory;
+        double memoryUsedKB = memoryUsed / 1024.0;
+        String roundedMemoryUsedKB = String.format("%.2f", memoryUsedKB);
+
+        if(scene.kdTree != null || scene.bvh != null) {
+            String structureType = (scene.bvh != null) ? "BVH" : "KD-Tree";
+            System.out.println(structureType + " memory usage: " + roundedMemoryUsedKB + " KB");
+        }
 
         long endBuild = System.nanoTime();
         double buildTimeMs = (endBuild - startBuild) / 1_000_000.0;
@@ -167,7 +216,7 @@ public class Scene {
 
         System.out.println("Build time: " + String.format("%dmin, %ds, %dms", buildMinutes, buildSeconds, buildMilliseconds));
 
-        Camera camera = new Camera(800, 400, 60, new Point(0, 15, -30), new Point(0, 5, 0), new Vector(0, 1, 0));
+        Camera camera = new Camera(400, 200, 100, new Point(0, 15, -30), new Point(0, 5, 0), new Vector(0, 1, 0));
 
         RayTracer rt = new RayTracer(scene, camera);
 
@@ -185,7 +234,81 @@ public class Scene {
 
         canvas.writeToFile();
     }
+
+    public static void generateRandomScene() throws IOException {
+        LightSource light = new PointLightSource(new Point(0, 50, 0), new Color(1, 1, 1));
     
+        Scene scene = new Scene();
+    
+        int numSpheres = 10_000_000;
+        double maxX = 50, maxY = 50, maxZ = 50;
+    
+        for (int i = 0; i < numSpheres; i++) {
+            double x = Math.random() * maxX - maxX / 2; 
+            double y = Math.random() * maxY - maxY / 2;
+            double z = Math.random() * maxZ - maxZ / 2;
+
+            Sphere sphere = new Sphere();
+            sphere.setTransformation(Matrix.translation(x, y, z));
+
+            Material mat = new Material();
+            mat.setColor(new Color(Math.random(), Math.random(), Math.random()));
+            mat.setDiffuse(0.7);
+            mat.setSpecular(0.3);
+            mat.setShininess(20);
+            sphere.setMaterial(mat);
+    
+            scene.addShapes(sphere);
+        }
+    
+
+        scene.addLightSource(light);
+    
+        long startBuild = System.nanoTime();
+
+        System.gc();
+        long beforeMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+
+        // scene.buildKDTree();
+        scene.buildBVH();
+    
+        long afterMemory = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
+        long memoryUsed = afterMemory - beforeMemory;
+        double memoryUsedKB = memoryUsed / 1024.0;
+        String roundedMemoryUsedKB = String.format("%.2f", memoryUsedKB);
+
+        if (scene.kdTree != null || scene.bvh != null) {
+            String structureType = (scene.bvh != null) ? "BVH" : "KD-Tree";
+            System.out.println(structureType + " memory usage: " + roundedMemoryUsedKB + " KB");
+        }
+    
+        long endBuild = System.nanoTime();
+        double buildTimeMs = (endBuild - startBuild) / 1_000_000.0;
+    
+        int buildMinutes = (int) (buildTimeMs / 60000);
+        int buildSeconds = (int) ((buildTimeMs % 60000) / 1000);
+        int buildMilliseconds = (int) (buildTimeMs % 1000);
+    
+        System.out.println("Build time: " + String.format("%dmin, %ds, %dms", buildMinutes, buildSeconds, buildMilliseconds));
+    
+        Camera camera = new Camera(400, 200, 60, new Point(0, 15, -30), new Point(0, 5, 0), new Vector(0, 1, 0));
+    
+        RayTracer rt = new RayTracer(scene, camera);
+    
+        long startRender = System.nanoTime();
+        Canvas canvas = rt.getRenderTarget();
+        long endRender = System.nanoTime();
+    
+        double renderTimeMs = (endRender - startRender) / 1_000_000.0;
+    
+        int renderMinutes = (int) (renderTimeMs / 60000);
+        int renderSeconds = (int) ((renderTimeMs % 60000) / 1000);
+        int renderMilliseconds = (int) (renderTimeMs % 1000);
+    
+        System.out.println("Traversal Time: " + String.format("%dmin, %ds, %dms", renderMinutes, renderSeconds, renderMilliseconds));
+    
+        canvas.writeToFile();
+    }    
 
     public IntersectionList traceRay(Ray ray) {
         IntersectionList intersectionList = new IntersectionList();

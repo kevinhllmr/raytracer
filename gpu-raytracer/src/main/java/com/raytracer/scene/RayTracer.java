@@ -5,6 +5,7 @@ import com.raytracer.canvas.Color;
 import com.raytracer.canvas.ColorPalette;
 import com.raytracer.math.Point;
 import com.raytracer.ray.Intersection;
+import com.raytracer.ray.IntersectionList;
 import com.raytracer.ray.Ray;
 import com.raytracer.shapes.Material;
 
@@ -22,10 +23,16 @@ public class RayTracer {
     public void render() {
         renderTarget = new Canvas(camera.getWidth(), camera.getHeight());
 
+        int totalIntersectionCount = 0;
+
         for(int y = 0; y < camera.getHeight(); y++) {
             for(int x = 0; x < camera.getWidth(); x++) {
                 Ray ray = camera.generateRay(x, y);
-                Intersection hit = scene.traceRay(ray).hit();
+
+                IntersectionList intersectionList = scene.traceRay(ray); 
+                totalIntersectionCount += intersectionList.getTotalIntersectionCount(); 
+
+                Intersection hit = intersectionList.hit();
 
                 if(hit != null) {
                     Material mat = hit.shape().getMaterial();
@@ -39,6 +46,8 @@ public class RayTracer {
                 }
             }
         }
+
+        System.out.println("Total Intersections: " + totalIntersectionCount);
     }
 
     public Canvas getRenderTarget() {

@@ -31,10 +31,12 @@ public class Main {
 
 
     public static void main(String[] args) throws IOException {
+        System.out.println("-------------------------------------------------------------");
         long startTime = System.nanoTime();
         
         // Scene.generateDefaultScene(); 
-        Scene.generateComplexScene();
+        Scene.generateGridScene();
+        // Scene.generateRandomScene();
         
         long endTime = System.nanoTime();
         double elapsedTimeSec = (endTime - startTime) / 1_000_000_000.0; 
@@ -45,6 +47,7 @@ public class Main {
         String timeStr = String.format("%dmin, %.0fs, %dms", minutes, seconds, milliseconds);
         
         System.out.println("Total: " + timeStr);
+        System.out.println("-------------------------------------------------------------");
     }
   
     // public static void main(String[] args) throws IOException {
